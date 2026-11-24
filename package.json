@@ -1,0 +1,13 @@
+{
+  "name": "openclaw",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "OpenClaw: orquesta de agentes con Claude (versión pública de demostración)",
+  "scripts": {
+    "orquesta": "node agents/orchestrator.mjs"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "1.6.0"
+  }
+}

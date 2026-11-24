@@ -1,0 +1,38 @@
+name: OpenClaw
+
+on:
+  schedule:
+    # 12:30 UTC = 6:30 am en la CDMX, de lunes a viernes
+    - cron: "30 12 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  openclaw:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Orquesta (3 subagentes en paralelo + sintetizador)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: npm run orquesta
+
+      - name: Guardar registro de ejecución
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add memory/ status.json
+          git diff --cached --quiet && exit 0
+          git commit -m "OpenClaw: corrida $(date -u +%F)"
+          git push
